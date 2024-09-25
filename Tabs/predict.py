@@ -6,7 +6,7 @@ import pandas as pd
 import streamlit.components.v1 as components
 
 # Import necessary functions from web_functions
-from web_functions import predict
+from web_functions_2 import predict
 
 hide_st_style = """
 <style>

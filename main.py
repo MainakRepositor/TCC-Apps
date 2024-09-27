@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # Import pages
-from Tabs import home, data, predict, predict2 #visualise
+from Tabs import home, data, predict, predict2, predict3, predict4, predict5, predict6, faq #visualise
 
 
 
@@ -24,7 +24,12 @@ Tabs = {
     "Home": home,
     "Data Info": data,
     "Cloud Security Analytics": predict,
-    "Cloud Architecture Analytics": predict2
+    "Cloud Architecture Analytics": predict2,
+    "Cloud Billing Analytics": predict3,
+    "Cloud Network Traffic Analytics": predict4,
+    "Cloud Data Analytics": predict5,
+    "Cloud Sustainability Analytics": predict6,
+    "FAQ": faq
     #"Visualisation": visualise
     #"About me": about
 }
@@ -40,9 +45,9 @@ page = st.sidebar.radio("Pages", list(Tabs.keys()))
 df, X, y = load_data()
 
 # Call the app funciton of selected page to run
-if page in ["Cloud Security Analytics","Cloud Architecture Analytics"]:
+if page in ["Cloud Security Analytics","Cloud Architecture Analytics","Cloud Billing Analytics","Cloud Network Traffic Analytics","Cloud Data Analytics","Cloud Sustainability Analytics"]:
     Tabs[page].app(df, X, y)
-elif (page == "Data Info"):
+elif (page == "Data Info" or page=="FAQ"):
     Tabs[page].app(df)
 else:
     Tabs[page].app()

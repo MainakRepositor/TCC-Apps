@@ -3,12 +3,12 @@
 # Import necessary modules
 import streamlit as st
 import pandas as pd
-import streamlit.components.v1 as components
+import numpy as np
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
 
-# Import necessary functions from web_functions
-from web_functions_2 import predict
-
-# Hide streamlit default menus
+# Hide Streamlit default menus
 hide_st_style = """
 <style>
 MainMenu {visibility:hidden;}
@@ -28,7 +28,7 @@ def app(df, X, y):
     st.markdown(
         """
             <p style="font-size:25px">
-                This app uses <b style="color:green">Random Forest Classifier</b> for the Analysis of Cloud Infrastructure.
+                This app uses <b style="color:green">Random Forest Regressor</b> for the Analysis of Cloud Infrastructure.
             </p>
         """, unsafe_allow_html=True)
     
@@ -147,23 +147,37 @@ def app(df, X, y):
             </table>
         """, unsafe_allow_html=True)
 
-    # Create a list to store all the features
-    additional_features = [third_party_integrations, cloud_service_provider, geolocation_restrictions, time_based_access, user_behavior_analytics, network_security_controls, access_control_lists, encryption_policies, data_sensitivity_classification]
+    # Prepare the feature array for the model
+    additional_features = [
+        third_party_integrations, cloud_service_provider, geolocation_restrictions, time_based_access,
+        user_behavior_analytics, network_security_controls, access_control_lists, encryption_policies, 
+        data_sensitivity_classification
+    ]
+    features_array = np.array(additional_features).reshape(1, -1)
 
-    # Use the new features for further analysis/prediction
-    st.header("The values entered by user")
-    df_additional = pd.DataFrame([additional_features], columns=[
-        'Third Party Integrations', 'Cloud Service Provider', 'Geolocation Restrictions', 'Time Based Access',
-        'User Behavior Analytics', 'Network Security Controls', 'Access Control Lists',
-        'Encryption Policies', 'Data Sensitivity Classification'
-    ])
+    # Train RandomForestRegressor and predict
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
+    rf_model.fit(X_train, y_train)
 
-    st.dataframe(df_additional)
-
-    # Display predictive results
+    # Display prediction results
+    # Create a button to predict
     if st.button("Predict"):
-        prediction, score = predict(X, y, additional_features)
-        st.success(f'Prediction: {prediction[0]}')
+        # Predict the cloud score using the trained RandomForest model
+        
+        prediction = rf_model.predict(features_array)
+        prediction = (prediction - 3) * 600
 
-        # Print the model score
-        st.sidebar.write(f"The model accuracy is {round((score * 100), 2)}%")
+        if isinstance(prediction, np.ndarray):
+            result = prediction[0]
+            
+
+        else:
+            result = prediction 
+            
+        
+        if result > 100: result = 100
+        result = abs(result)
+        # Display the prediction result
+        st.success(f"Cloud Security Optimization Level: {result:.2f} %")
+        st.sidebar.info("Prediction of Cloud Security based on various access controls")

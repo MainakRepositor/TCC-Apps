@@ -1,14 +1,10 @@
-"""This module contains data about the prediction page"""
-
-# Import necessary modules
 import streamlit as st
 import pandas as pd
-import streamlit.components.v1 as components
+import numpy as np
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
 
-# Import necessary functions from web_functions
-from web_functions_2 import predict
-
-# Hide streamlit default menus
 hide_st_style = """
 <style>
 MainMenu {visibility:hidden;}
@@ -28,142 +24,81 @@ def app(df, X, y):
     st.markdown(
         """
             <p style="font-size:25px">
-                This app uses <b style="color:green">Random Forest Classifier</b> for the Analysis of Cloud Infrastructure.
+                This app uses <b style="color:green">Random Forest Regressor</b> for the Analysis of Cloud Infrastructure.
             </p>
         """, unsafe_allow_html=True)
     
-    # Add reference table for the new features
-    st.markdown("""
-        ### Reference Table for Additional Feature Labels
-
-        <table style="width:100%; border: 1px solid black; border-collapse: collapse;">
-            <tr>
-                <th style="border: 1px solid black; padding: 5px;">Feature</th>
-                <th style="border: 1px solid black; padding: 5px;">Possible Values</th>
-            </tr>
-            <tr>
-                <td style="border: 1px solid black; padding: 5px;">Third Party Integrations</td>
-                <td style="border: 1px solid black; padding: 5px;">1: Enabled, 0: Disabled</td>
-            </tr>
-            <tr>
-                <td style="border: 1px solid black; padding: 5px;">Cloud Service Provider</td>
-                <td style="border: 1px solid black; padding: 5px;">1: AWS, 2: Azure, 3: Google Cloud</td>
-            </tr>
-            <tr>
-                <td style="border: 1px solid black; padding: 5px;">Geolocation Restrictions</td>
-                <td style="border: 1px solid black; padding: 5px;">1: Applied, 0: Not Applied</td>
-            </tr>
-            <tr>
-                <td style="border: 1px solid black; padding: 5px;">Time Based Access</td>
-                <td style="border: 1px solid black; padding: 5px;">1: Enabled, 0: Disabled</td>
-            </tr>
-            <tr>
-                <td style="border: 1px solid black; padding: 5px;">User Behavior Analytics</td>
-                <td style="border: 1px solid black; padding: 5px;">1: Applied, 0: Not Applied</td>
-            </tr>
-            <tr>
-                <td style="border: 1px solid black; padding: 5px;">Network Security Controls</td>
-                <td style="border: 1px solid black; padding: 5px;">1: Applied, 0: Not Applied</td>
-            </tr>
-            <tr>
-                <td style="border: 1px solid black; padding: 5px;">Access Control Lists</td>
-                <td style="border: 1px solid black; padding: 5px;">1: Applied, 0: Not Applied</td>
-            </tr>
-            <tr>
-                <td style="border: 1px solid black; padding: 5px;">Encryption Policies</td>
-                <td style="border: 1px solid black; padding: 5px;">1: Applied, 0: Not Applied</td>
-            </tr>
-            <tr>
-                <td style="border: 1px solid black; padding: 5px;">Data Sensitivity Classification</td>
-                <td style="border: 1px solid black; padding: 5px;">1: Applied, 0: Not Applied</td>
-            </tr>
-        </table>
-    """, unsafe_allow_html=True)
-
-    st.divider()
-    st.subheader("Select Values for Additional Features:")
+    # Take feature input from the user
+    st.subheader("Select Values:")
 
     col1, col2 = st.columns(2)
 
-    with col1:
-        # Sliders for new features
-        third_party_integrations = st.slider("Third Party Integrations", 0, 1)
-        cloud_service_provider = st.slider("Cloud Service Provider", 1, 3)
-        geolocation_restrictions = st.slider("Geolocation Restrictions", 0, 1)
-        time_based_access = st.slider("Time Based Access", 0, 1)
-        user_behavior_analytics = st.slider("User Behavior Analytics", 0, 1)
-        network_security_controls = st.slider("Network Security Controls", 0, 1)
-        access_control_lists = st.slider("Access Control Lists", 0, 1)
-        encryption_policies = st.slider("Encryption Policies", 0, 1)
-        data_sensitivity_classification = st.slider("Data Sensitivity Classification", 0, 1)
+    with col1: 
+        # Input features using sliders
+        a3 = st.slider("API Access Control", 0, 1)
+        b3 = st.slider("Cloud Workload Identity", 0, 1)
+        c3 = st.slider("DLP Policies", 0, 1)
+        d3 = st.slider("Infrastructure as Code", 0, 1)
+        e3 = st.slider("Cloud Native Directory Services", 0, 1)
+        f3 = st.slider("Access to Logs and Monitoring Tools", 0, 1)
+        g3 = st.slider("Granular Access Control", 0, 1)
+        h3 = st.slider("Custom Access Control Policies", 0, 1)
+        i3 = st.slider("Zero Trust Architecture", 0, 1)
 
     # Map slider values to feature labels
-    cloud_service_provider_map = {1: 'AWS', 2: 'Azure', 3: 'Google Cloud'}.get(cloud_service_provider)
-    
-    # Display selected values in a table
+    api_access_control = {1: 'Implemented', 0: 'Not Implemented'}.get(a3)
+    cloud_workload_identity = {1: 'Enabled', 0: 'Disabled'}.get(b3)
+    dlp_policies = {1: 'Enabled', 0: 'Disabled'}.get(c3)
+    infra_as_code = {1: 'Implemented', 0: 'Not Implemented'}.get(d3)
+    cloud_native_directory = {1: 'Enabled', 0: 'Disabled'}.get(e3)
+    access_to_logs = {1: 'Granted', 0: 'Not Granted'}.get(f3)
+    granular_access_control = {1: 'Enabled', 0: 'Disabled'}.get(g3)
+    custom_access_policies = {1: 'Enabled', 0: 'Disabled'}.get(h3)
+    zero_trust_architecture = {1: 'Implemented', 0: 'Not Implemented'}.get(i3)
+
     with col2:
+        # Display the selected values in a structured format
         st.markdown(f"""
             <table style="width:100%">
-                <tr>
-                    <th>Feature</th>
-                    <th>Selected Value</th>
-                </tr>
-                <tr>
-                    <td>Third Party Integrations</td>
-                    <td>{'Enabled' if third_party_integrations else 'Disabled'}</td>
-                </tr>
-                <tr>
-                    <td>Cloud Service Provider</td>
-                    <td>{cloud_service_provider_map}</td>
-                </tr>
-                <tr>
-                    <td>Geolocation Restrictions</td>
-                    <td>{'Applied' if geolocation_restrictions else 'Not Applied'}</td>
-                </tr>
-                <tr>
-                    <td>Time Based Access</td>
-                    <td>{'Enabled' if time_based_access else 'Disabled'}</td>
-                </tr>
-                <tr>
-                    <td>User Behavior Analytics</td>
-                    <td>{'Applied' if user_behavior_analytics else 'Not Applied'}</td>
-                </tr>
-                <tr>
-                    <td>Network Security Controls</td>
-                    <td>{'Applied' if network_security_controls else 'Not Applied'}</td>
-                </tr>
-                <tr>
-                    <td>Access Control Lists</td>
-                    <td>{'Applied' if access_control_lists else 'Not Applied'}</td>
-                </tr>
-                <tr>
-                    <td>Encryption Policies</td>
-                    <td>{'Applied' if encryption_policies else 'Not Applied'}</td>
-                </tr>
-                <tr>
-                    <td>Data Sensitivity Classification</td>
-                    <td>{'Applied' if data_sensitivity_classification else 'Not Applied'}</td>
-                </tr>
+                <tr><th>Feature</th><th>Selected Value</th></tr>
+                <tr><td>API Access Control</td><td>{api_access_control}</td></tr>
+                <tr><td>Cloud Workload Identity</td><td>{cloud_workload_identity}</td></tr>
+                <tr><td>DLP Policies</td><td>{dlp_policies}</td></tr>
+                <tr><td>Infrastructure as Code</td><td>{infra_as_code}</td></tr>
+                <tr><td>Cloud Native Directory Services</td><td>{cloud_native_directory}</td></tr>
+                <tr><td>Access to Logs and Monitoring Tools</td><td>{access_to_logs}</td></tr>
+                <tr><td>Granular Access Control</td><td>{granular_access_control}</td></tr>
+                <tr><td>Custom Access Control Policies</td><td>{custom_access_policies}</td></tr>
+                <tr><td>Zero Trust Architecture</td><td>{zero_trust_architecture}</td></tr>
             </table>
         """, unsafe_allow_html=True)
 
-    # Create a list to store all the features
-    additional_features = [third_party_integrations, cloud_service_provider, geolocation_restrictions, time_based_access, user_behavior_analytics, network_security_controls, access_control_lists, encryption_policies, data_sensitivity_classification]
+    # Create a feature list for prediction
+    features = [a3, b3, c3, d3, e3, f3, g3, h3, i3]
+    features_array = np.array(features).reshape(1, -1)
 
-    # Use the new features for further analysis/prediction
-    st.header("The values entered by user")
-    df_additional = pd.DataFrame([additional_features], columns=[
-        'Third Party Integrations', 'Cloud Service Provider', 'Geolocation Restrictions', 'Time Based Access',
-        'User Behavior Analytics', 'Network Security Controls', 'Access Control Lists',
-        'Encryption Policies', 'Data Sensitivity Classification'
-    ])
+    # Train the RandomForestRegressor model
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
+    rf_model.fit(X_train, y_train)
 
-    st.dataframe(df_additional)
-
-    # Display predictive results
+    # Create a button to predict
     if st.button("Predict"):
-        prediction, score = predict(X, y, additional_features)
-        st.success(f'Prediction: {prediction[0]}')
+        # Predict the cloud score using the trained RandomForest model
+        
+        prediction = rf_model.predict(features_array)
+        prediction = (prediction - 3) * 600
 
-        # Print the model score
-        st.sidebar.write(f"The model accuracy is {round((score * 100), 2)}%")
+        if isinstance(prediction, np.ndarray):
+            result = prediction[0]
+            
+
+        else:
+            result = prediction 
+            
+        
+        if result > 100: result = 100
+        result = abs(result)
+        # Display the prediction result
+        st.success(f"Cloud Security Optimization Level: {result:.2f} %")
+        st.sidebar.info("Prediction of Cloud Security based on various access controls")

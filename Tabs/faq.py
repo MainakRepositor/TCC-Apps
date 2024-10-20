@@ -2,9 +2,18 @@ import streamlit as st
 import pandas as pd
 def app(df):
     st.title('FAQ Demo')
+     # Sidebar chatbot integration
+    st.markdown("## Cloud Consultant 💻")
+    chatbot_html = '''
+        <iframe style="background: white;border-radius: 8px; border: none; box-shadow: 5px 5px 24px 0px #0000001F;" src="https://embed.writer.com/chat/TlXwppNI-QxsnlIoWV6cUcPysAxorREivVHIfjHeDWo" width="100%" height="600"></iframe>
+    '''
+    st.markdown(chatbot_html, unsafe_allow_html=True)
+
+
     df = pd.read_csv('cloud_security_dataset.csv')
-    st.subheader('The database')
+    st.subheader('The database 🫙')
     st.dataframe(df)
+  
 
     st.markdown('''Here is an explanation of the database provided containing a wide range of fields related to access control, security, and user management within cloud or IT environments. Here's a breakdown of the different fields and what they represent:
 

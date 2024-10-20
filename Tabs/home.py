@@ -7,7 +7,7 @@ def app():
     """This function create the home page"""
     
     # Add title to the home page
-    st.title("Cloud Security Architecture Analysis System")
+    st.title("Cloud Architecture and Business Suitability Analytics")
 
     # Add image to the home page
     st.image("./images/home.png",width=1000)

@@ -4,11 +4,11 @@
 import streamlit as st
 
 # Import necessary functions from web_functions
-from web_functions_2 import load_data
+from web_functions import load_data
 
 # Configure the app
 st.set_page_config(
-    page_title = 'Cloud Security Architecture Analysis',
+    page_title = 'Cloud Architecture Analysis',
     page_icon ='🌨️',
     layout = 'wide',
     initial_sidebar_state = 'auto'
@@ -27,7 +27,7 @@ Tabs = {
     "Cloud Architecture Analytics": predict2,
     "Cloud Billing Analytics": predict3,
     "Cloud Network Traffic Analytics": predict4,
-    "Cloud Data Analytics": predict5,
+    "Cloud Compute Analytics": predict5,
     "Cloud Sustainability Analytics": predict6,
     "FAQ": faq
     #"Visualisation": visualise
@@ -45,7 +45,7 @@ page = st.sidebar.radio("Pages", list(Tabs.keys()))
 df, X, y = load_data()
 
 # Call the app funciton of selected page to run
-if page in ["Cloud Security Analytics","Cloud Architecture Analytics","Cloud Billing Analytics","Cloud Network Traffic Analytics","Cloud Data Analytics","Cloud Sustainability Analytics"]:
+if page in ["Cloud Security Analytics","Cloud Architecture Analytics","Cloud Billing Analytics","Cloud Network Traffic Analytics","Cloud Compute Analytics","Cloud Sustainability Analytics"]:
     Tabs[page].app(df, X, y)
 elif (page == "Data Info" or page=="FAQ"):
     Tabs[page].app(df)

@@ -15,7 +15,7 @@ def load_data():
     df = pd.read_csv('cloud_DB.csv')
 
     # Perform feature and target split
-    X = df[["Third_Party_Integrations","Cloud_Service_Provider","Geolocation_Restrictions","Time_Based_Access","User_Behavior_Analytics","Network_Security_Controls", "Access_Control_Lists", "Encryption_Policies", "Data_Sensitivity_Classification"]]
+    X = df[["VPC_Controls","Segmentation_of_Duties","Instance_Metadata_Service_Access","Shared_Responsibility_Model","Cloud_Storage_Access_Policies","Data_Governance_Framework", "API_Gateway_Security", "Dynamic_Access_Management", "Access_to_Sensitive_Compute_Resources"]]
     y = df['Cloud_Score']
 
     return df, X, y

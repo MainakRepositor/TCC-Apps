@@ -179,5 +179,5 @@ def app(df, X, y):
         if result > 100: result = 100
         result = abs(result)
         # Display the prediction result
-        st.success(f"Cloud Security Optimization Level: {result:.2f} %")
-        st.sidebar.info("Prediction of Cloud Security based on various access controls")
+        st.success(f"Cloud Architecture and Load Balancing Optimization Level: {result:.2f} %")
+        st.sidebar.info("Prediction of Cloud Architecture and Load Balancing Optimization Level based on various access controls")
